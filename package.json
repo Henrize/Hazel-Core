@@ -1,0 +1,35 @@
+{
+  "name": "hazel-core",
+  "version": "0.0.1",
+  "description": "A modular, flexible, and minimal module manager for Node.js",
+  "keywords": [
+    "hazel-core",
+    "module-manager",
+    "package-manager",
+    "hot-reload",
+    "server"
+  ],
+  "homepage": "https://github.com/Henrize/Hazel-Core",
+  "bugs": "https://github.com/Henrize/Hazel-Core/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Henrize/Hazel-Core.git"
+  },
+  "author": {
+    "name": "Henrize Kim",
+    "email": "mail@henrize.kim",
+    "url": "https://henrize.kim/"
+  },
+  "type": "module",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "exports": {
+    ".": "./index.js"
+  },
+  "engines": {
+    "node": ">= 20.x.x"
+  }
+}
