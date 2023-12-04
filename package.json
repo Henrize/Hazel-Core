@@ -1,6 +1,6 @@
 {
   "name": "hazel-core",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha",
   "description": "A modular, flexible, and minimal module manager for Node.js",
   "keywords": [
     "hazel-core",
