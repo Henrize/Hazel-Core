@@ -1,3 +1,6 @@
 # Editor Config
 .vscode
 .idea
+
+# git config
+.git

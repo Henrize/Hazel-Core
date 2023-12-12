@@ -1,1 +1,3 @@
-console.log('Fatal error: Hazel Core is under development. Please do not use this package yet.');
+import Hazel from './src/hazel.js';
+
+export default Hazel;

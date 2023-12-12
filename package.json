@@ -1,11 +1,10 @@
 {
   "name": "hazel-core",
-  "version": "0.0.1-alpha",
-  "description": "A modular, flexible, and minimal module manager for Node.js",
+  "version": "0.0.1",
+  "description": "A minimalistic module organizer for small projects like chatroom bots, with hot-reload support.",
   "keywords": [
     "hazel-core",
     "module-manager",
-    "package-manager",
     "hot-reload",
     "server"
   ],
