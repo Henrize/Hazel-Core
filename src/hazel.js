@@ -16,7 +16,11 @@ class Hazel {
    * Export all Hazel Core constants.
    * @type {object}
    */
-  static constants = constants;
+  static constants = {
+    launcher: constants.moduleLauncher,
+    executor: constants.moduleExecutor,
+    terminator: constants.moduleTerminator,
+  };
 
   /**
    * Default Hazel Core configuration.
@@ -65,7 +69,7 @@ class Hazel {
       if (!this.modules.has(name)) {
         this.modules.set(name, new HazelModule(name));
       }
-      this.modules.get(name).moduleFunctions.set(type, target);
+      this.modules.get(name).set(type, target);
     } catch (error) {
       this.error(error);
       return false;
@@ -138,13 +142,13 @@ class Hazel {
       return false
     }
     if (typeof type === 'symbol') {
-      return this.modules.get(name).moduleFunctions.has(type);
+      return this.modules.get(name).has(type);
     } else {
       if (typeof type !== 'undefined') {
         this.error(new TypeError('Type of the function must be a symbol, received ' + typeof type));
         return false;
       }
-      if (this.modules.get(name).moduleFunctions.size > 0) {
+      if (this.modules.get(name).size > 0) {
         return true;
       }
     }
@@ -165,6 +169,9 @@ class Hazel {
         this.error(new TypeError('Name of the module must be a string'));
         return false;
       }
+      if (typeof type === 'undefined') {
+        type = constants.moduleExecutor;
+      }
       if (typeof type !== 'symbol') {
         this.error(new TypeError('Type of the function must be a symbol'));
         return false;
@@ -174,7 +181,7 @@ class Hazel {
         return false;
       }
 
-      result = this.modules.get(name).moduleFunctions.get(type)(...args);
+      result = await this.modules.get(name).get(type)(...args);
     } catch (error) {
       this.error(error);
     }
@@ -196,8 +203,8 @@ class Hazel {
       }
 
       for (const module of this.modules.values()) {
-        if (module.moduleFunctions.has(type)) {
-          await module.moduleFunctions.get(type)(...args);
+        if (module.has(type)) {
+          await module.get(type)(...args);
         }
       }
     } catch (error) {
