@@ -174,11 +174,50 @@ class Hazel {
         return false;
       }
 
+      let targetFunctionList = [];
       for (const module of this.modules.values()) {
         if (module.has(type)) {
-          await module.get(type)(this, ...args);
+          targetFunctionList.push([module.get(type), module.getPriority(type)]);
         }
       }
+      targetFunctionList.sort((a, b) => a[1] - b[1]);
+      for (const targetFunction of targetFunctionList) {
+        await targetFunction[0](this, ...args);
+      }
+    } catch (error) {
+      this.error(error);
+    }
+    return true;
+  }
+
+  /**
+   * Set the priority of a function. The lower the value, the higher the priority.
+   * @public
+   * @param {string} name - The name of the module.
+   * @param {Symbol} type - The type of the function.
+   * @param {number} value - The priority value. The lower the value, the higher the priority.
+   * @returns {boolean} - Whether the priority was set.
+   */
+  setPriority(name, type, value) {
+    try {
+      if (typeof name !== 'string') {
+        this.error(new TypeError('Name of the module must be a string, received ' + typeof name));
+        return false;
+      }
+      if (typeof type !== 'symbol') {
+        this.error(new TypeError('Type of the function must be a symbol, received ' + typeof type));
+        return false;
+      }
+      if (typeof value !== 'number') {
+        this.error(new TypeError('Priority value must be a number, received ' + typeof value));
+        return false;
+      }
+      if (!this.has(name, type)) {
+        this.error(new Error('Module or function not found'));
+        return false;
+      }
+
+      this.modules.get(name).setPriority(type, value);
     } catch (error) {
       this.error(error);
     }
