@@ -81,7 +81,7 @@ class Hazel {
    * Remove a function from a module.
    * @public
    * @param {string} name - The name of the module.
-   * @param {Symbol} type - The type of the function.
+   * @param {Symbol} [type] - The type of the function.
    * @returns {boolean} - Whether the function was removed.
    */
   delete(name, type) {
@@ -90,36 +90,13 @@ class Hazel {
         this.error(new Error('Module not found'));
         return false;
       }
-      if (typeof type !== 'symbol') {
+      if (typeof type === 'undefined') {
+        this.modules.delete(name);
+      } else if (typeof type !== 'symbol') {
         this.error(new TypeError('Type of the function must be a symbol, received ' + typeof type));
         return false;
       }
-
-      this.modules.get(name).moduleFunctions.delete(type);
-    } catch (error) {
-      this.error(error);
-    }
-    return true;
-  }
-
-  /**
-   * Delete a module.
-   * @public
-   * @param {string} name - The name of the module.
-   * @returns {boolean} - Whether the module was deleted.
-   */
-  deleteModule(name) {
-    try {
-      if (typeof name !== 'string') {
-        this.error(new TypeError('Name of the module must be a string, received ' + typeof name));
-        return false;
-      }
-      if (!this.modules.has(name)) {
-        this.error(new Error('Module not found'));
-        return false;
-      }
-
-      this.modules.delete(name);
+      this.modules.get(name).delete(type);
     } catch (error) {
       this.error(error);
     }
@@ -130,7 +107,7 @@ class Hazel {
    * Check if a module exists.
    * @public
    * @param {string} name - The name of the module.
-   * @param {Symbol} type - The type of the function(optional).
+   * @param {Symbol} [type] - The type of the function(optional).
    * @returns {boolean} - Whether the module exists.
    */
   has(name, type) {
@@ -141,18 +118,13 @@ class Hazel {
     if (!this.modules.has(name)) {
       return false
     }
-    if (typeof type === 'symbol') {
-      return this.modules.get(name).has(type);
-    } else {
-      if (typeof type !== 'undefined') {
-        this.error(new TypeError('Type of the function must be a symbol, received ' + typeof type));
-        return false;
-      }
-      if (this.modules.get(name).size > 0) {
-        return true;
-      }
+    if (typeof type === 'undefined') {
+      return true;
+    } else if (typeof type !== 'symbol') {
+      this.error(new TypeError('Type of the function must be a symbol, received ' + typeof type));
+      return false;
     }
-    return false;
+    return this.modules.get(name).has(type);
   }
 
   /**
@@ -181,7 +153,7 @@ class Hazel {
         return false;
       }
 
-      result = await this.modules.get(name).get(type)(...args);
+      result = await this.modules.get(name).get(type)(this, ...args);
     } catch (error) {
       this.error(error);
     }
@@ -204,7 +176,7 @@ class Hazel {
 
       for (const module of this.modules.values()) {
         if (module.has(type)) {
-          await module.get(type)(...args);
+          await module.get(type)(this, ...args);
         }
       }
     } catch (error) {
