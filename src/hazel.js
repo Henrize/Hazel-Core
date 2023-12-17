@@ -44,10 +44,12 @@ class Hazel {
   /**
    * Hazel Core constructor function.
    * @constructor
-   * @param {object} config - A valid Hazel Core configuration.
+   * @param {object} [config] - A valid Hazel Core configuration.
    */
   constructor(config) {
-    this.config = config;
+    if (typeof config !== 'undefined' && config !== null) {
+      this.config = config;
+    }
   }
 
   /**
@@ -116,7 +118,7 @@ class Hazel {
         this.error(new Error('Module not found'));
         return false;
       }
-      if (typeof type === 'undefined') {
+      if (typeof type === 'undefined' || type === null) {
         this.modules.delete(name);
       } else if (typeof type !== 'symbol') {
         this.error(new TypeError('Type of the function must be a symbol, received ' + typeof type));
@@ -144,7 +146,7 @@ class Hazel {
     if (!this.modules.has(name)) {
       return false
     }
-    if (typeof type === 'undefined') {
+    if (typeof type === 'undefined' || type === null) {
       return true;
     } else if (typeof type !== 'symbol') {
       this.error(new TypeError('Type of the function must be a symbol, received ' + typeof type));
@@ -167,7 +169,7 @@ class Hazel {
         this.error(new TypeError('Name of the module must be a string'));
         return false;
       }
-      if (typeof type === 'undefined') {
+      if (typeof type === 'undefined' || type === null) {
         type = constants.moduleExecutor;
       }
       if (typeof type !== 'symbol') {
