@@ -170,7 +170,7 @@ class Hazel {
    * Execute a function from a module.
    * @public
    * @param {string} name - The name of the module.
-   * @param {Symbol} type - The type of the function.
+   * @param {Symbol} [type] - The type of the function.
    * @param {...any} args - Arguments to pass to the function.
    */
   async run(name, type, ...args) {
@@ -239,8 +239,7 @@ class Hazel {
     try {
       if (!Error.prototype.isPrototypeOf(error)) {
         this.error(new TypeError('Error must be an instance of Error'));
-      }
-      if (this.has('error', constants.moduleExecutor)) {
+      } else if (this.has('error', constants.moduleExecutor)) {
         this.run('error', constants.moduleExecutor, error)
           .catch((error) => { console.error(error); });
       } else {
