@@ -16,10 +16,17 @@ class Hazel {
    * Export all Hazel Core constants.
    * @type {object}
    */
-  static constants = {
+  static type = {
+    /** launcher function will be used to initialize a module. Like listening to a port etc. */
     launcher: constants.moduleLauncher,
+
+    /** executor function will be used to execute a module. Like handling a request etc. */
     executor: constants.moduleExecutor,
+
+    /** terminator function will be used to terminate a module. before the module being deleted. */
     terminator: constants.moduleTerminator,
+
+    __proto__: null,
   };
 
   /**
