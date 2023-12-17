@@ -54,32 +54,51 @@ class Hazel {
    * Bind a function to a new or existing module.
    * @public
    * @param {string} name - The name of the module.
-   * @param {Symbol} type - The type of the function.
    * @param {function} target - The function to bind.
+   * @param {Object} [options] - Options for the function.
+   * @param {Symbol} [options.type] - The type of the function.
+   * @param {number} [options.priority] - The priority of the function.
    * @returns {boolean} - Whether the function was bound.
    */
-  set(name, type, target) {
+  set(name, target, options = {
+    type: constants.moduleExecutor,
+    priority: Infinity,
+  }) {
     try {
       if (typeof name !== 'string') {
         this.error(new TypeError('Name of the module must be a string, received ' + typeof name));
         return false;
       }
-      if (typeof type !== 'symbol') {
-        this.error(new TypeError('Type of the function must be a symbol, received ' + typeof type));
+      if (typeof target !== 'function') {
+        this.error(new TypeError('Target must be a function, received ' + typeof target));
         return false;
       }
-      if (typeof target !== 'function') {
-        this.error(new TypeError('Target function must be a function, received ' + typeof target));
+      if (typeof options !== 'object') {
+        this.error(new TypeError('Options must be an object, received ' + typeof options));
+        return false;
+      }
+
+      if (typeof options.type === 'undefined' || options.type === null) {
+        options.type = constants.moduleExecutor;
+      } else if (typeof options.type !== 'symbol') {
+        this.error(new TypeError('Type of the function must be a symbol, received ' + typeof options.type));
+        return false;
+      }
+      if (typeof options.priority === 'undefined' || options.priority === null) {
+        options.priority = Infinity;
+      } else if (typeof options.priority !== 'number') {
+        this.error(new TypeError('Priority of the function must be a number, received ' + typeof options.priority));
         return false;
       }
 
       if (!this.modules.has(name)) {
         this.modules.set(name, new HazelModule(name));
       }
-      this.modules.get(name).set(type, target);
+
+      this.modules.get(name).set(options.type, target);
+      this.modules.get(name).setPriority(options.type, options.priority);
     } catch (error) {
       this.error(error);
-      return false;
     }
     return true;
   }
@@ -191,40 +210,6 @@ class Hazel {
       for (const targetFunction of targetFunctionList) {
         await targetFunction[0](this, ...args);
       }
-    } catch (error) {
-      this.error(error);
-    }
-    return true;
-  }
-
-  /**
-   * Set the priority of a function. The lower the value, the higher the priority.
-   * @public
-   * @param {string} name - The name of the module.
-   * @param {Symbol} type - The type of the function.
-   * @param {number} value - The priority value. The lower the value, the higher the priority.
-   * @returns {boolean} - Whether the priority was set.
-   */
-  setPriority(name, type, value) {
-    try {
-      if (typeof name !== 'string') {
-        this.error(new TypeError('Name of the module must be a string, received ' + typeof name));
-        return false;
-      }
-      if (typeof type !== 'symbol') {
-        this.error(new TypeError('Type of the function must be a symbol, received ' + typeof type));
-        return false;
-      }
-      if (typeof value !== 'number') {
-        this.error(new TypeError('Priority value must be a number, received ' + typeof value));
-        return false;
-      }
-      if (!this.has(name, type)) {
-        this.error(new Error('Module or function not found'));
-        return false;
-      }
-
-      this.modules.get(name).setPriority(type, value);
     } catch (error) {
       this.error(error);
     }
