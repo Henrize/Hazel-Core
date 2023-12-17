@@ -48,7 +48,11 @@ class Hazel {
    */
   constructor(config) {
     if (typeof config !== 'undefined' && config !== null) {
-      this.config = config;
+      if (typeof config !== 'object' || Array.isArray(config)) {
+        throw new TypeError('Configuration must be an object, received ' + typeof config);
+      } else {
+        this.config = config;
+      }
     }
   }
 
@@ -114,17 +118,24 @@ class Hazel {
    */
   delete(name, type) {
     try {
-      if (!this.modules.has(name)) {
-        this.error(new Error('Module not found'));
+      if (typeof name !== 'string') {
+        this.error(new TypeError('Name of the module must be a string, received ' + typeof name));
         return false;
       }
+
       if (typeof type === 'undefined' || type === null) {
+        if (!this.modules.has(name)) {
+          this.error(new Error('Module \'' + name + '\' not found'));
+          return false;
+        }
+
         this.modules.delete(name);
       } else if (typeof type !== 'symbol') {
         this.error(new TypeError('Type of the function must be a symbol, received ' + typeof type));
         return false;
+      } else {
+        this.modules.get(name).delete(type);
       }
-      this.modules.get(name).delete(type);
     } catch (error) {
       this.error(error);
     }

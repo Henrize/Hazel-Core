@@ -29,15 +29,15 @@ class HazelModule extends Map {
   /**
    * HazelModule constructor function.
    * @constructor
-   * @param {string} moduleName - The name of the module.
-   * @throws {TypeError} - If moduleName is not a string.
+   * @param {string} name - The name of the module.
+   * @throws {TypeError} - If name is not a string.
    */
-  constructor(moduleName) {
-    if (typeof moduleName !== 'string') {
-      throw new TypeError('moduleName must be a string');
+  constructor(name) {
+    if (typeof name !== 'string') {
+      throw new TypeError('Module name must be a string');
     }
     super();
-    this.name = moduleName;
+    this.name = name;
   }
 
   /**
@@ -51,6 +51,10 @@ class HazelModule extends Map {
     if (typeof value !== 'number') {
       throw new TypeError('Priority value must be a number, received ' + typeof value);
     }
+    if (typeof type !== 'symbol') {
+      throw new TypeError('Type must be a symbol, received ' + typeof type);
+    }
+
     this.priority.set(type, value);
     return true;
   }
@@ -62,6 +66,10 @@ class HazelModule extends Map {
    * @returns {number} - The priority value.
    */
   getPriority(type) {
+    if (typeof type !== 'symbol') {
+      throw new TypeError('Type must be a symbol, received ' + typeof type);
+    }
+
     if (this.priority.has(type)) {
       return this.priority.get(type);
     } else {
